@@ -15,7 +15,7 @@ import com.anjsh.entity.OrderRecords;
 import com.anjsh.utils.MailUtil;
 
 
-@Component
+//@Component
 public class WorkerScheduler {
 
 	@Autowired

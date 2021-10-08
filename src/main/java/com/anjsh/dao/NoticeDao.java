@@ -3,16 +3,17 @@ package com.anjsh.dao;
 import java.util.List;
 
 import com.anjsh.entity.Notice;
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Param;
 
-public interface NoticeDao {
-	// 查询所有的须知
-	public List<Notice> findNoticeByType(@Param("start") int start, @Param("size") int size);
+public interface NoticeDao extends BaseMapper<Notice> {
+    // 查询所有的须知
+    public List<Notice> findNoticeByType(@Param("start") int start, @Param("size") int size);
 
-	// 查询所有通知的数量
-	public int findNoticeByTypeNum();
+    // 查询所有通知的数量
+    public int findNoticeByTypeNum();
 
-	// 通过id查询通知
-	public Notice findNoticeById(int id);
+    // 通过id查询通知
+    public Notice findNoticeById(int id);
 
 }

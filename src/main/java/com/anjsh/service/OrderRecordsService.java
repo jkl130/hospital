@@ -3,8 +3,9 @@ package com.anjsh.service;
 import java.util.List;
 
 import com.anjsh.entity.OrderRecords;
+import com.baomidou.mybatisplus.extension.service.IService;
 
-public interface OrderRecordsService {
+public interface OrderRecordsService extends IService<OrderRecords> {
 
 	// 插入新预约记录
 	public int insertOrderRecords(OrderRecords orderRecords);

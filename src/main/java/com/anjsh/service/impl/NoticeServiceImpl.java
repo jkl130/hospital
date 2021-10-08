@@ -2,6 +2,7 @@ package com.anjsh.service.impl;
 
 import java.util.List;
 
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -9,7 +10,7 @@ import com.anjsh.dao.NoticeDao;
 import com.anjsh.entity.Notice;
 import com.anjsh.service.NoticeService;
 @Service
-public class NoticeServiceImpl implements NoticeService {
+public class NoticeServiceImpl extends ServiceImpl<NoticeDao,Notice> implements NoticeService {
 
 	@Autowired
 	private NoticeDao noticeDao;

@@ -17,7 +17,8 @@ server:
     threads:
       max: 128
       min-spare: 5
-
+  servlet:
+    context-path: /api
 #mybatis:
 mybatis-plus:
   configuration:

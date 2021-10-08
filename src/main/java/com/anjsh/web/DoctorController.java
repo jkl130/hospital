@@ -10,6 +10,7 @@ import com.anjsh.dto.OrderHosPageQuery;
 import com.anjsh.entity.CommonCondition;
 import com.anjsh.entity.Doctor;
 import com.anjsh.entity.Hospital;
+import com.anjsh.entity.Office;
 import com.anjsh.service.DoctorService;
 import com.anjsh.service.HospitalService;
 import com.anjsh.utils.PageUtils;
@@ -21,78 +22,18 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Resource;
+
 /**
  * @author sfturing
  * @date 2017年5月31日
  */
 @RestController
+@RequestMapping("doctor")
 public class DoctorController {
-    @Autowired
+
+    @Resource
     private DoctorService doctorService;
-    @Autowired
-    private HospitalService hospitalService;
-    @Autowired
-    private PageUtils pageUtils;
-
-
-    /**
-     * 推荐医院
-     */
-    @GetMapping("recHospital")
-    public List<Hospital> recHospital() {
-        return hospitalService.list(Wrappers.lambdaQuery(Hospital.class).gt(Hospital::getRec, 0));
-    }
-
-
-    @GetMapping("recDoctor")
-    public List<Doctor> recDoctor() {
-        return doctorService.list(Wrappers.lambdaQuery(Doctor.class).gt(Doctor::getRec, 0));
-    }
-
-
-//    /**
-//     * 医生主界面(推荐医生)
-//     *
-//     * @return
-//     */
-//    @RequestMapping(value = "/doctorIndex/{page}")
-//    public String officeIdex(Model model, @PathVariable("page") int page) {
-//        // 查询推荐的医院
-//        List<Hospital> hospitalRe = hospitalService.findHosByRe();
-//        // 设置页面
-//        pageUtils.setCurrentPage(page);
-//        pageUtils.setTotalRecord(doctorService.findDoctorByReNum(hospitalRe));
-//        int start;
-//        if (pageUtils.getCurrentPage() == 0) {
-//            start = 0;
-//        } else {
-//            start = pageUtils.getPageRecord() * (pageUtils.getCurrentPage() - 1);
-//        }
-//        Map<String, Object> doctorMap = new HashMap<String, Object>();
-//        doctorMap.put("list", hospitalRe);
-//        doctorMap.put("start", start);
-//        doctorMap.put("size", pageUtils.getPageRecord());
-//        List<Doctor> doctorRe = doctorService.findDoctorByRe(doctorMap);
-//        model.addAttribute("pages", pageUtils);
-//        model.addAttribute("doctorRe", doctorRe);
-//        return "doctor/doctorIndex";
-//    }
-
-    /**
-     * 医生详情
-     *
-     * @return
-     */
-    @RequestMapping(value = "/doctorInfoShow/{id}", method = RequestMethod.GET)
-    public DoctorInfoDTO doctorInfoShow(@PathVariable(value = "id") int id) {
-        Doctor doctor = doctorService.findDoctorById(id);
-        Hospital hospital = hospitalService.findHosByName(doctor.getHospitalName());
-        DoctorInfoDTO doctorInfoDTO = new DoctorInfoDTO();
-        doctorInfoDTO.setDoctor(doctor);
-        doctorInfoDTO.setHospital(hospital);
-        return doctorInfoDTO;
-    }
-
 
     @PostMapping("/allDoctor")
     public IPage<Doctor> orderHos(@RequestBody OrderDoctorPageQuery pageQuery) {
@@ -106,43 +47,18 @@ public class DoctorController {
         );
     }
 
-//    /**
-//     * 全部医生
-//     *
-//     * @return
-//     */
-//    @RequestMapping(value = "/allDoctor/{page}")
-//    public String orderOffcie(Model model, @PathVariable("page") int page, Doctor doctor) {
-//        // 将输入条件传回前台
-//        CommonCondition commonCondition = new CommonCondition();
-//        commonCondition.setHospitalName(doctor.getHospitalName());
-//        commonCondition.setOfficesName(doctor.getOfficesName());
-//        commonCondition.setDoctorName(doctor.getDoctorName());
-//        commonCondition.setDoctorTitle(doctor.getDoctorTitle());
-//        commonCondition.setDoctorDegree(doctor.getDoctorDegree());
-//        commonCondition.setDoctorAdministrative(doctor.getDoctorAdministrative());
-//        pageUtils.setCurrentPage(page);
-//        pageUtils.setTotalRecord(doctorService.findDoctorNum(doctor));
-//        int start;
-//        if (pageUtils.getCurrentPage() == 0) {
-//            start = 0;
-//        } else {
-//            start = pageUtils.getPageRecord() * (pageUtils.getCurrentPage() - 1);
-//        }
-//        List<Doctor> doctorRe = doctorService.findDoctorByCondition(doctor, start, pageUtils.getPageRecord());
-//        // 查询医生的职位
-//        List<String> doctorTitle = doctorService.findDoctorTitle();
-//        List<String> doctorAdministrative = doctorService.findDoctorAdministrative();
-//        List<String> doctorDegree = doctorService.findDoctorDegree();
-//        model.addAttribute("pages", pageUtils);
-//        model.addAttribute("doctorRe", doctorRe);
-//        // 查询条件
-//        model.addAttribute("commonCondition", commonCondition);
-//        // 将查询的医生职称传到前台
-//        model.addAttribute("doctorTitle", doctorTitle);
-//        model.addAttribute("doctorAdministrative", doctorAdministrative);
-//        model.addAttribute("doctorDegree", doctorDegree);
-//        return "doctor/doctor";
-//    }
+    @PostMapping("add")
+    public void add(@RequestBody Doctor doctor) {
+        doctorService.save(doctor);
+    }
 
+    @PutMapping("update")
+    public void update(@RequestBody Doctor doctor) {
+        doctorService.updateById(doctor);
+    }
+
+    @DeleteMapping("delete/{id}")
+    public void delete(@PathVariable Integer id) {
+        doctorService.removeById(id);
+    }
 }

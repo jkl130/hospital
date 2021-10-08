@@ -39,9 +39,8 @@ public class App implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(new LoginHandlerInterceptor())
-                .addPathPatterns("/user/**")
-                .addPathPatterns("/order/**")
-                .excludePathPatterns("/user/login", "/user/sign");
+                .addPathPatterns("/**")
+                .excludePathPatterns("/user/login","/doc.html");
     }
 
     @Bean

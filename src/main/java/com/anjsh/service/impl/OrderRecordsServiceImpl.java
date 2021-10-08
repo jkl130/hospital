@@ -2,6 +2,7 @@ package com.anjsh.service.impl;
 
 import java.util.List;
 
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -11,7 +12,7 @@ import com.anjsh.entity.OrderRecords;
 import com.anjsh.service.OrderRecordsService;
 
 @Service
-public class OrderRecordsServiceImpl implements OrderRecordsService {
+public class OrderRecordsServiceImpl extends ServiceImpl<OrderRecordsDao,OrderRecords> implements OrderRecordsService {
 	@Autowired
 	private OrderRecordsDao orderRecordsDao;
 
