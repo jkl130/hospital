@@ -46,5 +46,4 @@ public class HelpController {
     public void delete(@PathVariable Integer id) {
         helpQAService.removeById(id);
     }
-
 }

@@ -1,4 +1,4 @@
-package com.anjsh.web;
+package com.anjsh.utils;
 
 import cn.hutool.core.bean.BeanUtil;
 import com.anjsh.entity.CommonUser;

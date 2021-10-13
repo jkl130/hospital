@@ -6,7 +6,7 @@ server-log-path: /app/log
 
 spring:
   application.name: hospital
-  profiles.active: test
+  profiles.active: dev
   main.allow-bean-definition-overriding: true
 
 server:
@@ -24,12 +24,3 @@ mybatis-plus:
   configuration:
     default-enum-type-handler: com.baomidou.mybatisplus.core.handlers.MybatisEnumTypeHandler
   mapperLocations: classpath:mapper/**/*.xml
-
-mail:
-  mailhost: smtp.qq.com
-  mailuser: 842081147@qq.com
-  mailpassword: qapyktnarjpubgaa
-
-page:
-  pageRecord: 8
-  showPageCount: 10
