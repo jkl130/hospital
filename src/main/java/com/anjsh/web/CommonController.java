@@ -1,6 +1,8 @@
 package com.anjsh.web;
 
+import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.img.ImgUtil;
+import cn.hutool.core.util.StrUtil;
 import com.anjsh.entity.Area;
 import com.anjsh.service.AreaService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,7 +43,7 @@ public class CommonController {
 
     @PostMapping("upload")
     public String fileUpload(@RequestParam(value = "upload") MultipartFile file) throws IOException {
-        return ImgUtil.toBase64DataUri(ImgUtil.read(file.getInputStream()), "png");
+        return ImgUtil.toBase64DataUri(ImgUtil.read(file.getInputStream()), CollectionUtil.getLast(StrUtil.split(file.getOriginalFilename(), ".")));
     }
 
 }
