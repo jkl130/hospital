@@ -6,7 +6,7 @@ server-log-path: /app/log
 
 spring:
   application.name: hospital
-  profiles.active: dev
+  profiles.active: prod
   main.allow-bean-definition-overriding: true
 
 server:
