@@ -1,10 +1,12 @@
 package com.anjsh.web;
 
+import cn.hutool.core.date.LocalDateTimeUtil;
 import com.anjsh.dao.CommentDao;
 import com.anjsh.entity.Comment;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -25,6 +27,7 @@ public class CommentController {
 
     @PutMapping("update")
     public void update(@RequestBody Comment comment) {
+        comment.setAtime(LocalDateTimeUtil.formatNormal(LocalDateTime.now()));
         commentDao.updateById(comment);
     }
 }

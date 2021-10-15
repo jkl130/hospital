@@ -29,4 +29,6 @@ public class Comment {
     private String answer;
 
     private LocalDateTime createTime;
+
+    private String atime;
 }
