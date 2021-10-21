@@ -1,25 +1,11 @@
 package com.anjsh.web;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import com.anjsh.dto.DoctorInfoDTO;
 import com.anjsh.dto.OrderDoctorPageQuery;
-import com.anjsh.dto.OrderHosPageQuery;
-import com.anjsh.entity.CommonCondition;
 import com.anjsh.entity.Doctor;
-import com.anjsh.entity.Hospital;
-import com.anjsh.entity.Office;
 import com.anjsh.service.DoctorService;
-import com.anjsh.service.HospitalService;
-import com.anjsh.utils.PageUtils;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -44,6 +30,7 @@ public class DoctorController {
                 .likeRight(pageQuery.getHospitalName() != null, Doctor::getHospitalName, pageQuery.getHospitalName())
                 .likeRight(pageQuery.getOfficesName() != null, Doctor::getOfficesName, pageQuery.getOfficesName())
                 .likeRight(pageQuery.getDoctorName() != null, Doctor::getDoctorName, pageQuery.getDoctorName())
+                .orderByDesc(Doctor::getId)
         );
     }
 

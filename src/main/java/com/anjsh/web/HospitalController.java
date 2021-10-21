@@ -32,6 +32,7 @@ public class HospitalController {
                 .likeRight(pageQuery.getProvince() != null, Hospital::getHospitalAddress, pageQuery.getProvince())
                 .like(pageQuery.getCity() != null, Hospital::getHospitalAddress, pageQuery.getCity())
                 .eq(pageQuery.getDistrict() != null, Hospital::getHospitalArea, pageQuery.getDistrict())
+                .orderByDesc(Hospital::getId)
         );
     }
 
