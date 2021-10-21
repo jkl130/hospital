@@ -25,7 +25,6 @@ public class HospitalController {
     @PostMapping("/orderHos")
     public IPage<Hospital> orderHos(@RequestBody OrderHosPageQuery pageQuery) {
         return hospitalService.page(new Page<>(pageQuery.getPageIndex(), pageQuery.getPageSize()), Wrappers.lambdaQuery(Hospital.class)
-                .eq(Hospital::getIsOpen, 1)
                 .eq(pageQuery.getHospitalNature() != null, Hospital::getHospitalNature, pageQuery.getHospitalNature())
                 .eq(pageQuery.getHospitalGrade() != null, Hospital::getHospitalGrade, pageQuery.getHospitalGrade())
                 .likeRight(pageQuery.getHospitalName() != null, Hospital::getHospitalName, pageQuery.getHospitalName())

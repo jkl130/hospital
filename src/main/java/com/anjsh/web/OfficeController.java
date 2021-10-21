@@ -21,7 +21,8 @@ public class OfficeController {
     public IPage<Office> orderOffice(@RequestBody OrderOfficePageQuery pageQuery) {
         return officeService.page(new Page<>(pageQuery.getPageIndex(), pageQuery.getPageSize()), Wrappers.lambdaQuery(Office.class)
                 .likeRight(pageQuery.getHospitalName() != null, Office::getHospitalName, pageQuery.getHospitalName())
-                .likeRight(pageQuery.getOfficesName() != null, Office::getOfficesName, pageQuery.getOfficesName()));
+                .likeRight(pageQuery.getOfficesName() != null, Office::getOfficesName, pageQuery.getOfficesName())
+                .orderByDesc(Office::getId));
     }
 
     @PostMapping("add")
