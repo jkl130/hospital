@@ -30,7 +30,7 @@ public class Comment {
 
     private LocalDateTime createTime;
 
-    private LocalDateTime atime;
+    private String atime;
 
     private LocalDateTime ctime;
 }
