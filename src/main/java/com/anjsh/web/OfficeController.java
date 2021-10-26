@@ -1,8 +1,8 @@
 package com.anjsh.web;
 
-import cn.hutool.core.lang.Assert;
 import com.anjsh.dto.OrderOfficePageQuery;
 import com.anjsh.entity.Office;
+import com.anjsh.exception.Assert;
 import com.anjsh.service.HospitalService;
 import com.anjsh.service.OfficeService;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -32,13 +32,13 @@ public class OfficeController {
 
     @PostMapping("add")
     public void add(@RequestBody Office office) {
-        office.setHosId(Assert.notNull(hospitalService.findHosByName(office.getHospitalName())).getId());
+        office.setHosId(Assert.notNull(hospitalService.findHosByName(office.getHospitalName()), "医院" + office.getHospitalName() + "不存在").getId());
         officeService.save(office);
     }
 
     @PutMapping("update")
     public void update(@RequestBody Office office) {
-        office.setHosId(Assert.notNull(hospitalService.findHosByName(office.getHospitalName())).getId());
+        office.setHosId(Assert.notNull(hospitalService.findHosByName(office.getHospitalName()), "医院" + office.getHospitalName() + "不存在").getId());
         officeService.updateById(office);
     }
 

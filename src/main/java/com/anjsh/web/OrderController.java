@@ -1,9 +1,9 @@
 package com.anjsh.web;
 
-import cn.hutool.core.lang.Assert;
 import com.anjsh.entity.Doctor;
 import com.anjsh.entity.Office;
 import com.anjsh.entity.OrderRecords;
+import com.anjsh.exception.Assert;
 import com.anjsh.service.DoctorService;
 import com.anjsh.service.HospitalService;
 import com.anjsh.service.OfficeService;
@@ -41,17 +41,19 @@ public class OrderController {
 
     @PostMapping("add")
     public void add(@RequestBody OrderRecords records) {
-        Integer hosId = Assert.notNull(hospitalService.findHosByName(records.getHospitalName())).getId();
-        records.setHosId(hosId);
-        records.setDoctorId(Assert.notNull(doctorService.getOne(Wrappers.lambdaQuery(Doctor.class).eq(Doctor::getHosId, hosId).eq(Doctor::getOfficeId, Assert.notNull(officeService.getOne(Wrappers.lambdaQuery(Office.class).eq(Office::getHosId, hosId).eq(Office::getOfficesName, records.getOfficesName()))).getId()).eq(Doctor::getDoctorName, records.getDoctorName()))).getId());
+        setOrder(records);
         orderRecordsService.save(records);
+    }
+
+    private void setOrder(@RequestBody OrderRecords records) {
+        Integer hosId = Assert.notNull(hospitalService.findHosByName(records.getHospitalName()), "医院" + records.getHospitalName() + "不存在").getId();
+        records.setHosId(hosId);
+        records.setDoctorId(Assert.notNull(doctorService.getOne(Wrappers.lambdaQuery(Doctor.class).eq(Doctor::getHosId, hosId).eq(Doctor::getOfficeId, Assert.notNull(officeService.getOne(Wrappers.lambdaQuery(Office.class).eq(Office::getHosId, hosId).eq(Office::getOfficesName, records.getOfficesName())), "科室" + records.getOfficesName() + "不存在").getId()).eq(Doctor::getDoctorName, records.getDoctorName())), "医生" + records.getDoctorName() + "不存在").getId());
     }
 
     @PutMapping("update")
     public void update(@RequestBody OrderRecords records) {
-        Integer hosId = Assert.notNull(hospitalService.findHosByName(records.getHospitalName())).getId();
-        records.setHosId(hosId);
-        records.setDoctorId(Assert.notNull(doctorService.getOne(Wrappers.lambdaQuery(Doctor.class).eq(Doctor::getHosId, hosId).eq(Doctor::getOfficeId, Assert.notNull(officeService.getOne(Wrappers.lambdaQuery(Office.class).eq(Office::getHosId, hosId).eq(Office::getOfficesName, records.getOfficesName()))).getId()).eq(Doctor::getDoctorName, records.getDoctorName()))).getId());
+        setOrder(records);
         orderRecordsService.updateById(records);
     }
 

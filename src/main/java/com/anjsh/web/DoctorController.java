@@ -1,9 +1,9 @@
 package com.anjsh.web;
 
-import cn.hutool.core.lang.Assert;
 import com.anjsh.dto.OrderDoctorPageQuery;
 import com.anjsh.entity.Doctor;
 import com.anjsh.entity.Office;
+import com.anjsh.exception.Assert;
 import com.anjsh.service.DoctorService;
 import com.anjsh.service.HospitalService;
 import com.anjsh.service.OfficeService;
@@ -46,17 +46,19 @@ public class DoctorController {
 
     @PostMapping("add")
     public void add(@RequestBody Doctor doctor) {
-        Integer hosId = Assert.notNull(hospitalService.findHosByName(doctor.getHospitalName())).getId();
-        doctor.setHosId(hosId);
-        doctor.setOfficeId(Assert.notNull(officeService.getOne(Wrappers.lambdaQuery(Office.class).eq(Office::getHosId, hosId).eq(Office::getOfficesName, doctor.getOfficesName()))).getId());
+        setDoctor(doctor);
         doctorService.save(doctor);
+    }
+
+    private void setDoctor(Doctor doctor) {
+        Integer hosId = Assert.notNull(hospitalService.findHosByName(doctor.getHospitalName()), "医院" + doctor.getHospitalName() + "不存在").getId();
+        doctor.setHosId(hosId);
+        doctor.setOfficeId(Assert.notNull(officeService.getOne(Wrappers.lambdaQuery(Office.class).eq(Office::getHosId, hosId).eq(Office::getOfficesName, doctor.getOfficesName())), "科室" + doctor.getOfficesName() + "不存在").getId());
     }
 
     @PutMapping("update")
     public void update(@RequestBody Doctor doctor) {
-        Integer hosId = Assert.notNull(hospitalService.findHosByName(doctor.getHospitalName())).getId();
-        doctor.setHosId(hosId);
-        doctor.setOfficeId(Assert.notNull(officeService.getOne(Wrappers.lambdaQuery(Office.class).eq(Office::getHosId, hosId).eq(Office::getOfficesName, doctor.getOfficesName()))).getId());
+        setDoctor(doctor);
         doctorService.updateById(doctor);
     }
 
