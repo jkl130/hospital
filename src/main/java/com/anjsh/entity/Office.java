@@ -30,5 +30,7 @@ public class Office {
     //科室诊疗范围
     private String officesDiagnosisScope;
 
+    private int hosId;
+
     private int rec;
 }

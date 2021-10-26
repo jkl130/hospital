@@ -1,8 +1,12 @@
 package com.anjsh.web;
 
+import cn.hutool.core.lang.Assert;
 import com.anjsh.dto.OrderDoctorPageQuery;
 import com.anjsh.entity.Doctor;
+import com.anjsh.entity.Office;
 import com.anjsh.service.DoctorService;
+import com.anjsh.service.HospitalService;
+import com.anjsh.service.OfficeService;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -21,6 +25,12 @@ public class DoctorController {
     @Resource
     private DoctorService doctorService;
 
+    @Resource
+    private HospitalService hospitalService;
+
+    @Resource
+    private OfficeService officeService;
+
     @PostMapping("/allDoctor")
     public IPage<Doctor> orderHos(@RequestBody OrderDoctorPageQuery pageQuery) {
         return doctorService.page(new Page<>(pageQuery.getPageIndex(), pageQuery.getPageSize()), Wrappers.lambdaQuery(Doctor.class)
@@ -36,11 +46,17 @@ public class DoctorController {
 
     @PostMapping("add")
     public void add(@RequestBody Doctor doctor) {
+        Integer hosId = Assert.notNull(hospitalService.findHosByName(doctor.getHospitalName())).getId();
+        doctor.setHosId(hosId);
+        doctor.setOfficeId(Assert.notNull(officeService.getOne(Wrappers.lambdaQuery(Office.class).eq(Office::getHosId, hosId).eq(Office::getOfficesName, doctor.getOfficesName()))).getId());
         doctorService.save(doctor);
     }
 
     @PutMapping("update")
     public void update(@RequestBody Doctor doctor) {
+        Integer hosId = Assert.notNull(hospitalService.findHosByName(doctor.getHospitalName())).getId();
+        doctor.setHosId(hosId);
+        doctor.setOfficeId(Assert.notNull(officeService.getOne(Wrappers.lambdaQuery(Office.class).eq(Office::getHosId, hosId).eq(Office::getOfficesName, doctor.getOfficesName()))).getId());
         doctorService.updateById(doctor);
     }
 

@@ -35,5 +35,9 @@ public class Doctor {
     // 医生关于
     private String doctorAbout;
 
+    private int hosId;
+
+    private int officeId;
+
     private int rec;
 }

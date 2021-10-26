@@ -45,4 +45,8 @@ public class OrderRecords {
     private int orderVer;
     //创建预约时间
     private Timestamp createTime;
+
+    private int doctorId;
+
+    private int hosId;
 }

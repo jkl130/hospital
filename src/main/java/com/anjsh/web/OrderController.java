@@ -1,27 +1,18 @@
 package com.anjsh.web;
 
-import java.util.List;
-
-import javax.annotation.Resource;
-import javax.servlet.http.HttpSession;
-
-import com.anjsh.dto.OrderOfficePageQuery;
-import com.anjsh.entity.*;
-import com.anjsh.service.CommonUserService;
+import cn.hutool.core.lang.Assert;
+import com.anjsh.entity.Doctor;
+import com.anjsh.entity.Office;
+import com.anjsh.entity.OrderRecords;
+import com.anjsh.service.DoctorService;
 import com.anjsh.service.HospitalService;
+import com.anjsh.service.OfficeService;
 import com.anjsh.service.OrderRecordsService;
-import com.anjsh.utils.UserContext;
-import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import com.anjsh.dao.FavouriteDao;
+import javax.annotation.Resource;
+import java.util.List;
 
 /**
  * @author sfturing
@@ -34,6 +25,15 @@ public class OrderController {
     @Resource
     private OrderRecordsService orderRecordsService;
 
+    @Resource
+    private HospitalService hospitalService;
+
+    @Resource
+    private DoctorService doctorService;
+
+    @Resource
+    private OfficeService officeService;
+
     @GetMapping("list")
     private List<OrderRecords> list() {
         return orderRecordsService.list();
@@ -41,11 +41,17 @@ public class OrderController {
 
     @PostMapping("add")
     public void add(@RequestBody OrderRecords records) {
+        Integer hosId = Assert.notNull(hospitalService.findHosByName(records.getHospitalName())).getId();
+        records.setHosId(hosId);
+        records.setDoctorId(Assert.notNull(doctorService.getOne(Wrappers.lambdaQuery(Doctor.class).eq(Doctor::getHosId, hosId).eq(Doctor::getOfficeId, Assert.notNull(officeService.getOne(Wrappers.lambdaQuery(Office.class).eq(Office::getHosId, hosId).eq(Office::getOfficesName, records.getOfficesName()))).getId()).eq(Doctor::getDoctorName, records.getDoctorName()))).getId());
         orderRecordsService.save(records);
     }
 
     @PutMapping("update")
     public void update(@RequestBody OrderRecords records) {
+        Integer hosId = Assert.notNull(hospitalService.findHosByName(records.getHospitalName())).getId();
+        records.setHosId(hosId);
+        records.setDoctorId(Assert.notNull(doctorService.getOne(Wrappers.lambdaQuery(Doctor.class).eq(Doctor::getHosId, hosId).eq(Doctor::getOfficeId, Assert.notNull(officeService.getOne(Wrappers.lambdaQuery(Office.class).eq(Office::getHosId, hosId).eq(Office::getOfficesName, records.getOfficesName()))).getId()).eq(Doctor::getDoctorName, records.getDoctorName()))).getId());
         orderRecordsService.updateById(records);
     }
 
