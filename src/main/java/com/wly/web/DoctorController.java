@@ -1,6 +1,5 @@
 package com.wly.web;
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -34,6 +33,11 @@ public class DoctorController {
     @Resource
     private OfficeService officeService;
 
+    @GetMapping
+    public List<Doctor> search(Integer hosId, Integer officeId) {
+        return doctorService.findByHosIdAndOfficeId(hosId, officeId);
+    }
+
     /**
      * 医生条件查询
      *
@@ -42,36 +46,19 @@ public class DoctorController {
      */
     @PostMapping("/allDoctor")
     public IPage<Doctor> allDoctor(@RequestBody DoctorPageQuery pageQuery) {
-        // 查询条件
-        LambdaQueryWrapper<Doctor> wrapper = Wrappers.lambdaQuery(Doctor.class)
-                // 医生职称
-                .eq(pageQuery.getDoctorTitle() != null, Doctor::getDoctorTitle, pageQuery.getDoctorTitle())
-                // 行政职位
-                .eq(pageQuery.getDoctorAdministrative() != null, Doctor::getDoctorAdministrative, pageQuery.getDoctorAdministrative())
-                // 学位
-                .eq(pageQuery.getDoctorDegree() != null, Doctor::getDoctorDegree, pageQuery.getDoctorDegree())
-                // 医生姓名 前缀模糊查询
-                .likeRight(pageQuery.getDoctorName() != null, Doctor::getDoctorName, pageQuery.getDoctorName())
-                // 根据id倒序排序
-                .orderByDesc(Doctor::getId);
-
-        if (pageQuery.getHospitalName() != null) {
-            List<Integer> hosIds = hospitalService.findIdsByName(pageQuery.getHospitalName());
-            if (hosIds.isEmpty()) {
-                return new Page<>();
-            }
-            wrapper.in(Doctor::getHosId, hosIds);
-        }
-
-        if (pageQuery.getOfficesName() != null) {
-            List<Integer> officeIds = officeService.findIdsByName(pageQuery.getOfficesName());
-            if (officeIds.isEmpty()) {
-                return new Page<>();
-            }
-            wrapper.in(Doctor::getOfficeId, officeIds);
-        }
-
-        return doctorService.page(new Page<>(pageQuery.getPageIndex(), pageQuery.getPageSize()), wrapper)
+        return doctorService.page(new Page<>(pageQuery.getPageIndex(), pageQuery.getPageSize()), Wrappers.lambdaQuery(Doctor.class)
+                        // 医生职称
+                        .eq(pageQuery.getDoctorTitle() != null, Doctor::getDoctorTitle, pageQuery.getDoctorTitle())
+                        // 行政职位
+                        .eq(pageQuery.getDoctorAdministrative() != null, Doctor::getDoctorAdministrative, pageQuery.getDoctorAdministrative())
+                        // 学位
+                        .eq(pageQuery.getDoctorDegree() != null, Doctor::getDoctorDegree, pageQuery.getDoctorDegree())
+                        // 医生姓名 前缀模糊查询
+                        .likeRight(pageQuery.getDoctorName() != null, Doctor::getDoctorName, pageQuery.getDoctorName())
+                        .eq(pageQuery.getHosId() != null, Doctor::getHosId, pageQuery.getHosId())
+                        .eq(pageQuery.getOfficeId() != null, Doctor::getOfficeId, pageQuery.getOfficeId())
+                        // 根据id倒序排序
+                        .orderByDesc(Doctor::getId))
                 .convert(doctor -> {
                     // 医院名称
                     doctor.setHospitalName(hospitalService.findNameById(doctor.getHosId()));
@@ -88,22 +75,7 @@ public class DoctorController {
      */
     @PostMapping("add")
     public void add(@RequestBody Doctor doctor) {
-        setDoctor(doctor);
         doctorService.save(doctor);
-    }
-
-
-    /**
-     * 设置医生所属的医院id和科室id
-     *
-     * @param doctor 医生
-     */
-    private void setDoctor(Doctor doctor) {
-        Integer hosId = hospitalService.findHosByName(doctor.getHospitalName()).getId();
-        // 医院id
-        doctor.setHosId(hosId);
-        // 科室id
-        doctor.setOfficeId(officeService.findIdByHosIdAndName(hosId, doctor.getOfficesName()));
     }
 
     /**
@@ -113,7 +85,6 @@ public class DoctorController {
      */
     @PutMapping("update")
     public void update(@RequestBody Doctor doctor) {
-        setDoctor(doctor);
         doctorService.updateById(doctor);
     }
 

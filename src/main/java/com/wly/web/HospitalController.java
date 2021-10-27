@@ -4,7 +4,6 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.wly.dto.HosPageQuery;
-import com.wly.entity.Doctor;
 import com.wly.entity.Hospital;
 import com.wly.entity.Office;
 import com.wly.entity.OrderRecords;
@@ -12,11 +11,11 @@ import com.wly.service.DoctorService;
 import com.wly.service.HospitalService;
 import com.wly.service.OfficeService;
 import com.wly.service.OrderRecordsService;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.time.LocalDateTime;
+import java.util.List;
 
 
 /**
@@ -40,6 +39,11 @@ public class HospitalController {
 
     @Resource
     private DoctorService doctorService;
+
+    @GetMapping("search")
+    public List<Hospital> search(String hospitalName) {
+        return hospitalService.findByName(hospitalName);
+    }
 
     /**
      * 医院条件查询
@@ -107,16 +111,8 @@ public class HospitalController {
      * @param id id
      */
     @DeleteMapping("delete/{id}")
-    @Transactional(rollbackFor = Exception.class)
     public void delete(@PathVariable Integer id) {
-        // 科室
-        officeService.remove(Wrappers.lambdaQuery(Office.class).eq(Office::getHosId, id));
-        // 医生
-        doctorService.remove(Wrappers.lambdaQuery(Doctor.class).eq(Doctor::getHosId, id));
-        // 订单
-        orderRecordsService.remove(Wrappers.lambdaQuery(OrderRecords.class).eq(OrderRecords::getHosId, id));
-        // 医院
-        hospitalService.removeById(id);
+        hospitalService.delete(id);
     }
 
 }

@@ -14,14 +14,6 @@ import java.util.List;
 public interface OfficeService extends IService<Office> {
 
     /**
-     * 找到id通过名字
-     *
-     * @param officesName 科室的名字
-     * @return {@link List}<{@link Integer}>
-     */
-    List<Integer> findIdsByName(String officesName);
-
-    /**
      * 通过id找到名字
      *
      * @param id id
@@ -36,5 +28,12 @@ public interface OfficeService extends IService<Office> {
      * @param officesName 科室的名字
      * @return {@link Integer}
      */
-    Integer findIdByHosIdAndName(Integer hosId, String officesName);
+    List<Office> findByHosIdAndName(Integer hosId, String officesName);
+
+    /**
+     * 删除
+     *
+     * @param id id
+     */
+    void delete(Integer id);
 }

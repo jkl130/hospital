@@ -14,20 +14,12 @@ import java.util.List;
 public interface HospitalService extends IService<Hospital> {
 
     /**
-     * 通过医院名称查找医院
+     * 找到医院通过名字
      *
      * @param hospitalName 医院的名字
-     * @return {@link Hospital}
+     * @return {@link List}<{@link Hospital}>
      */
-    Hospital findHosByName(String hospitalName);
-
-    /**
-     * 找到id通过名字
-     *
-     * @param hospitalName 医院的名字
-     * @return {@link List}<{@link Integer}>
-     */
-    List<Integer> findIdsByName(String hospitalName);
+    List<Hospital> findByName(String hospitalName);
 
     /**
      * 通过id找到名字
@@ -36,4 +28,11 @@ public interface HospitalService extends IService<Hospital> {
      * @return {@link String}
      */
     String findNameById(Integer id);
+
+    /**
+     * 删除
+     *
+     * @param id id
+     */
+    void delete(Integer id);
 }

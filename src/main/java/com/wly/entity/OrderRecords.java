@@ -96,4 +96,9 @@ public class OrderRecords {
      * 医院id
      */
     private int hosId;
+
+    /**
+     * 科室id
+     */
+    private int officeId;
 }

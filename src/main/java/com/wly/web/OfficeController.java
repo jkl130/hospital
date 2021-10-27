@@ -6,13 +6,12 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.wly.dto.OfficePageQuery;
 import com.wly.entity.Doctor;
+import com.wly.entity.Hospital;
 import com.wly.entity.Office;
-import com.wly.entity.OrderRecords;
 import com.wly.service.DoctorService;
 import com.wly.service.HospitalService;
 import com.wly.service.OfficeService;
 import com.wly.service.OrderRecordsService;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -42,6 +41,11 @@ public class OfficeController {
     @Resource
     private OrderRecordsService orderRecordsService;
 
+    @GetMapping("search")
+    public List<Office> search(Integer hosId, String officeName) {
+        return officeService.findByHosIdAndName(hosId, officeName);
+    }
+
     /**
      * 科室条件查询
      *
@@ -59,7 +63,7 @@ public class OfficeController {
 
         if (pageQuery.getHospitalName() != null) {
             // 根据医院名称 前缀模糊
-            List<Integer> hosIds = hospitalService.findIdsByName(pageQuery.getHospitalName());
+            List<Integer> hosIds = hospitalService.findByName(pageQuery.getHospitalName()).stream().map(Hospital::getId).collect(Collectors.toList());
             if (hosIds.isEmpty()) {
                 return new Page<>();
             }
@@ -83,17 +87,7 @@ public class OfficeController {
      */
     @PostMapping("add")
     public void add(@RequestBody Office office) {
-        setOffice(office);
         officeService.save(office);
-    }
-
-    /**
-     * 设置科室的医院id
-     *
-     * @param office 科室
-     */
-    private void setOffice(@RequestBody Office office) {
-        office.setHosId(hospitalService.findHosByName(office.getHospitalName()).getId());
     }
 
     /**
@@ -103,7 +97,6 @@ public class OfficeController {
      */
     @PutMapping("update")
     public void update(@RequestBody Office office) {
-        setOffice(office);
         officeService.updateById(office);
     }
 
@@ -113,17 +106,7 @@ public class OfficeController {
      * @param id id
      */
     @DeleteMapping("delete/{id}")
-    @Transactional(rollbackFor = Exception.class)
     public void delete(@PathVariable Integer id) {
-        List<Integer> doctorIds = doctorService.list(Wrappers.lambdaQuery(Doctor.class).eq(Doctor::getOfficeId, id).select(Doctor::getId)).stream().map(Doctor::getId).collect(Collectors.toList());
-        if (!doctorIds.isEmpty()) {
-            // 医生
-            doctorService.removeByIds(doctorIds);
-            // 订单
-            orderRecordsService.remove(Wrappers.lambdaQuery(OrderRecords.class).in(OrderRecords::getDoctorId, doctorIds));
-        }
-
-        // 科室
-        officeService.removeById(id);
+        officeService.delete(id);
     }
 }

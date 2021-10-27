@@ -1,18 +1,15 @@
 package com.wly.web;
 
-import com.wly.entity.Doctor;
-import com.wly.entity.Office;
 import com.wly.entity.OrderRecords;
-import com.wly.exception.Assert;
 import com.wly.service.DoctorService;
 import com.wly.service.HospitalService;
 import com.wly.service.OfficeService;
 import com.wly.service.OrderRecordsService;
-import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 /**
@@ -44,7 +41,14 @@ public class OrderController {
      */
     @GetMapping("list")
     private List<OrderRecords> list() {
-        return orderRecordsService.list();
+        return orderRecordsService.list().stream().peek(orderRecords -> {
+            // 医院名称
+            orderRecords.setHospitalName(hospitalService.findNameById(orderRecords.getHosId()));
+            // 科室名称
+            orderRecords.setOfficesName(officeService.findNameById(orderRecords.getOfficeId()));
+            // 医生名称
+            orderRecords.setDoctorName(doctorService.findNameById(orderRecords.getDoctorId()));
+        }).collect(Collectors.toList());
     }
 
     /**
@@ -54,22 +58,9 @@ public class OrderController {
      */
     @PostMapping("add")
     public void add(@RequestBody OrderRecords records) {
-        setOrder(records);
         orderRecordsService.save(records);
     }
 
-    /**
-     * 设置订单
-     *
-     * @param records 记录
-     */
-    private void setOrder(@RequestBody OrderRecords records) {
-        Integer hosId = hospitalService.findHosByName(records.getHospitalName()).getId();
-        // 医院id
-        records.setHosId(hosId);
-        // 医生id
-        records.setDoctorId(Assert.notNull(doctorService.getOne(Wrappers.lambdaQuery(Doctor.class).eq(Doctor::getHosId, hosId).eq(Doctor::getOfficeId, Assert.notNull(officeService.getOne(Wrappers.lambdaQuery(Office.class).eq(Office::getHosId, hosId).eq(Office::getOfficesName, records.getOfficesName())), "科室" + records.getOfficesName() + "不存在").getId()).eq(Doctor::getDoctorName, records.getDoctorName())), "医生" + records.getDoctorName() + "不存在").getId());
-    }
 
     /**
      * 更新
@@ -78,7 +69,6 @@ public class OrderController {
      */
     @PutMapping("update")
     public void update(@RequestBody OrderRecords records) {
-        setOrder(records);
         orderRecordsService.updateById(records);
     }
 

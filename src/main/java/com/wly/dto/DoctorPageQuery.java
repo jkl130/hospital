@@ -12,14 +12,14 @@ import lombok.Data;
 public class DoctorPageQuery extends PageQuery {
 
     /**
-     * 医院的名字
+     * 医院id
      */
-    private String hospitalName;
+    private Integer hosId;
 
     /**
-     * 科室名称
+     * 科室id
      */
-    private String officesName;
+    private Integer officeId;
 
     /**
      * 医生的名字
