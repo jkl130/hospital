@@ -1,6 +1,7 @@
 package com.wly.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
@@ -88,5 +89,6 @@ public class CommonUser {
     /**
      * 是否存在。0：修改密码校验码，1：完善信息校验码
      */
+    @TableField("isDelete")
     private int isDelete;
 }
