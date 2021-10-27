@@ -55,7 +55,7 @@ server:
   port: 8081
 
 logging.level:
-  com.anjsh.dao: debug
+  com.wly.dao: debug
 
 knife4j:
   enable: true
