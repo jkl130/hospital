@@ -27,7 +27,7 @@ public class AreaServiceImpl extends ServiceImpl<AreaMapper, Area> implements Ar
                 .eq(Area::getParentId,
                         baseMapper.selectOne(Wrappers.lambdaQuery(Area.class)
                                 .eq(Area::getAreaName, areaName)
-                                .select(Area::getId))));
+                                .select(Area::getId)).getId()));
     }
 
     @Override
