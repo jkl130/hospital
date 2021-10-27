@@ -10,4 +10,11 @@ import com.wly.entity.Doctor;
  * @date 2021/10/27
  */
 public interface DoctorService extends IService<Doctor> {
+
+    /**
+     * 删除
+     *
+     * @param id id
+     */
+    void delete(Integer id);
 }

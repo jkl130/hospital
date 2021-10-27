@@ -6,19 +6,13 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.wly.dto.DoctorPageQuery;
 import com.wly.entity.Doctor;
-import com.wly.entity.Hospital;
-import com.wly.entity.Office;
-import com.wly.entity.OrderRecords;
-import com.wly.exception.Assert;
 import com.wly.service.DoctorService;
 import com.wly.service.HospitalService;
 import com.wly.service.OfficeService;
-import com.wly.service.OrderRecordsService;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
-import java.util.stream.Collectors;
+import java.util.List;
 
 
 /**
@@ -39,9 +33,6 @@ public class DoctorController {
 
     @Resource
     private OfficeService officeService;
-
-    @Resource
-    private OrderRecordsService orderRecordsService;
 
     /**
      * 医生条件查询
@@ -65,21 +56,27 @@ public class DoctorController {
                 .orderByDesc(Doctor::getId);
 
         if (pageQuery.getHospitalName() != null) {
-            // 根据医院名称 前缀模糊查询
-            wrapper.in(Doctor::getHosId, hospitalService.list(Wrappers.lambdaQuery(Hospital.class).likeRight(Hospital::getHospitalName, pageQuery.getHospitalName()).select(Hospital::getId)).stream().map(Hospital::getId).collect(Collectors.toList()));
+            List<Integer> hosIds = hospitalService.findIdsByName(pageQuery.getHospitalName());
+            if (hosIds.isEmpty()) {
+                return new Page<>();
+            }
+            wrapper.in(Doctor::getHosId, hosIds);
         }
 
         if (pageQuery.getOfficesName() != null) {
-            // 根据科室名称 前缀模糊查询
-            wrapper.in(Doctor::getOfficeId, officeService.list(Wrappers.lambdaQuery(Office.class).likeRight(Office::getOfficesName, pageQuery.getOfficesName()).select(Office::getId)).stream().map(Office::getId).collect(Collectors.toList()));
+            List<Integer> officeIds = officeService.findIdsByName(pageQuery.getOfficesName());
+            if (officeIds.isEmpty()) {
+                return new Page<>();
+            }
+            wrapper.in(Doctor::getOfficeId, officeIds);
         }
 
         return doctorService.page(new Page<>(pageQuery.getPageIndex(), pageQuery.getPageSize()), wrapper)
                 .convert(doctor -> {
                     // 医院名称
-                    doctor.setHospitalName(hospitalService.getOne(Wrappers.lambdaQuery(Hospital.class).eq(Hospital::getId, doctor.getHosId()).select(Hospital::getHospitalName)).getHospitalName());
+                    doctor.setHospitalName(hospitalService.findNameById(doctor.getHosId()));
                     // 科室名称
-                    doctor.setOfficesName(officeService.getOne(Wrappers.lambdaQuery(Office.class).eq(Office::getId, doctor.getOfficeId()).select(Office::getOfficesName)).getOfficesName());
+                    doctor.setOfficesName(officeService.findNameById(doctor.getOfficeId()));
                     return doctor;
                 });
     }
@@ -106,7 +103,7 @@ public class DoctorController {
         // 医院id
         doctor.setHosId(hosId);
         // 科室id
-        doctor.setOfficeId(Assert.notNull(officeService.getOne(Wrappers.lambdaQuery(Office.class).eq(Office::getHosId, hosId).eq(Office::getOfficesName, doctor.getOfficesName())), "科室" + doctor.getOfficesName() + "不存在").getId());
+        doctor.setOfficeId(officeService.findIdByHosIdAndName(hosId, doctor.getOfficesName()));
     }
 
     /**
@@ -126,11 +123,7 @@ public class DoctorController {
      * @param id id
      */
     @DeleteMapping("delete/{id}")
-    @Transactional(rollbackFor = Exception.class)
     public void delete(@PathVariable Integer id) {
-        // 订单
-        orderRecordsService.remove(Wrappers.lambdaQuery(OrderRecords.class).eq(OrderRecords::getDoctorId, id));
-        // 医生
-        doctorService.removeById(id);
+        doctorService.delete(id);
     }
 }

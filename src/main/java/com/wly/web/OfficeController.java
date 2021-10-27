@@ -1,18 +1,17 @@
 package com.wly.web;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.wly.dto.OfficePageQuery;
 import com.wly.entity.Doctor;
-import com.wly.entity.Hospital;
 import com.wly.entity.Office;
 import com.wly.entity.OrderRecords;
 import com.wly.service.DoctorService;
 import com.wly.service.HospitalService;
 import com.wly.service.OfficeService;
 import com.wly.service.OrderRecordsService;
-import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
@@ -60,13 +59,17 @@ public class OfficeController {
 
         if (pageQuery.getHospitalName() != null) {
             // 根据医院名称 前缀模糊
-            wrapper.in(Office::getHosId, hospitalService.list(Wrappers.lambdaQuery(Hospital.class).likeRight(Hospital::getHospitalName, pageQuery.getHospitalName()).select(Hospital::getId)).stream().map(Hospital::getId).collect(Collectors.toList()));
+            List<Integer> hosIds = hospitalService.findIdsByName(pageQuery.getHospitalName());
+            if (hosIds.isEmpty()) {
+                return new Page<>();
+            }
+            wrapper.in(Office::getHosId, hosIds);
         }
 
         return officeService.page(new Page<>(pageQuery.getPageIndex(), pageQuery.getPageSize()), wrapper)
                 .convert(office -> {
                     // 医院名称
-                    office.setHospitalName(hospitalService.getOne(Wrappers.lambdaQuery(Hospital.class).eq(Hospital::getId, office.getHosId()).select(Hospital::getHospitalName)).getHospitalName());
+                    office.setHospitalName(hospitalService.findNameById(office.getHosId()));
                     // 医生人数
                     office.setDoctorNum(doctorService.count(Wrappers.lambdaQuery(Doctor.class).eq(Doctor::getHosId, office.getHosId()).eq(Doctor::getOfficeId, office.getId())) + "人");
                     return office;
