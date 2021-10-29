@@ -41,11 +41,9 @@ public class OfficeServiceImpl extends ServiceImpl<OfficeMapper, Office> impleme
     }
 
     @Override
-    public List<Office> findByHosIdAndName(Integer hosId, String officesName) {
+    public List<Office> findByHosId(Integer hosId) {
         return baseMapper.selectList(Wrappers.lambdaQuery(Office.class)
                 .eq(Office::getHosId, hosId)
-                // 根据科室名称 前缀模糊查询
-                .likeRight(Office::getOfficesName, officesName)
                 .select(Office::getId).select(Office::getOfficesName));
     }
 

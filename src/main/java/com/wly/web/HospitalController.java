@@ -7,7 +7,6 @@ import com.wly.dto.HosPageQuery;
 import com.wly.entity.Hospital;
 import com.wly.entity.Office;
 import com.wly.entity.OrderRecords;
-import com.wly.service.DoctorService;
 import com.wly.service.HospitalService;
 import com.wly.service.OfficeService;
 import com.wly.service.OrderRecordsService;
@@ -37,9 +36,6 @@ public class HospitalController {
     @Resource
     private OrderRecordsService orderRecordsService;
 
-    @Resource
-    private DoctorService doctorService;
-
     @GetMapping("search")
     public List<Hospital> search(String hospitalName) {
         return hospitalService.findByName(hospitalName);
@@ -64,7 +60,7 @@ public class HospitalController {
                         .likeRight(pageQuery.getHospitalName() != null, Hospital::getHospitalName, pageQuery.getHospitalName())
                         // 指定省查询医院地址 前缀模糊查询
                         .likeRight(pageQuery.getProvince() != null, Hospital::getHospitalAddress, pageQuery.getProvince())
-                        // 指定市查询医院地址 前缀模糊查询
+                        // 指定市查询医院地址 模糊查询
                         .like(pageQuery.getCity() != null, Hospital::getHospitalAddress, pageQuery.getCity())
                         // 区
                         .eq(pageQuery.getDistrict() != null, Hospital::getHospitalArea, pageQuery.getDistrict())

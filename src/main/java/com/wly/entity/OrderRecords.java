@@ -101,4 +101,7 @@ public class OrderRecords {
      * 科室id
      */
     private int officeId;
+
+    @TableField(exist = false)
+    private String username;
 }

@@ -1,14 +1,14 @@
 package com.wly.web;
 
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.wly.entity.CommonUser;
 import com.wly.entity.OrderRecords;
-import com.wly.service.DoctorService;
-import com.wly.service.HospitalService;
-import com.wly.service.OfficeService;
-import com.wly.service.OrderRecordsService;
+import com.wly.service.*;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 
@@ -34,6 +34,9 @@ public class OrderController {
     @Resource
     private OfficeService officeService;
 
+    @Resource
+    private CommonUserService commonUserService;
+
     /**
      * 列出订单
      *
@@ -42,6 +45,8 @@ public class OrderController {
     @GetMapping("list")
     private List<OrderRecords> list() {
         return orderRecordsService.list().stream().peek(orderRecords -> {
+            // 患者名称
+            orderRecords.setUsername(Optional.ofNullable(commonUserService.getOne(Wrappers.lambdaQuery(CommonUser.class).eq(CommonUser::getUserId, orderRecords.getUserID()).select(CommonUser::getUserName))).map(CommonUser::getUserName).orElse(null));
             // 医院名称
             orderRecords.setHospitalName(hospitalService.findNameById(orderRecords.getHosId()));
             // 科室名称

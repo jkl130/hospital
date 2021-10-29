@@ -11,7 +11,6 @@ import com.wly.entity.Office;
 import com.wly.service.DoctorService;
 import com.wly.service.HospitalService;
 import com.wly.service.OfficeService;
-import com.wly.service.OrderRecordsService;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -38,12 +37,9 @@ public class OfficeController {
     @Resource
     private DoctorService doctorService;
 
-    @Resource
-    private OrderRecordsService orderRecordsService;
-
     @GetMapping("search")
-    public List<Office> search(Integer hosId, String officeName) {
-        return officeService.findByHosIdAndName(hosId, officeName);
+    public List<Office> search(Integer hosId) {
+        return officeService.findByHosId(hosId);
     }
 
     /**

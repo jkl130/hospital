@@ -22,13 +22,12 @@ public interface OfficeService extends IService<Office> {
     String findNameById(Integer id);
 
     /**
-     * 找到id通过医院id和名称
+     * 找到科室通过医院id
      *
-     * @param hosId       医院id
-     * @param officesName 科室的名字
+     * @param hosId 医院id
      * @return {@link Integer}
      */
-    List<Office> findByHosIdAndName(Integer hosId, String officesName);
+    List<Office> findByHosId(Integer hosId);
 
     /**
      * 删除
