@@ -22,3 +22,9 @@ server:
 #mybatis:
 mybatis-plus:
   mapperLocations: classpath:mapper/**/*.xml
+
+# 腾讯云密钥
+secretId: AKIDbz80bvykGVS9YgX8SVGkxta0AtLWR5Ta
+secretKey: rSlnX1E9nBI7fwxhAMHvHMBj00iETR7X
+# cos名称
+bucketName: img-1256886731
