@@ -33,7 +33,7 @@ public class DoctorController {
     @Resource
     private OfficeService officeService;
 
-    @GetMapping
+    @GetMapping("search")
     public List<Doctor> search(Integer hosId, Integer officeId) {
         return doctorService.findByHosIdAndOfficeId(hosId, officeId);
     }

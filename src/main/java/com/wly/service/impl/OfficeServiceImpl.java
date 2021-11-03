@@ -42,9 +42,7 @@ public class OfficeServiceImpl extends ServiceImpl<OfficeMapper, Office> impleme
 
     @Override
     public List<Office> findByHosId(Integer hosId) {
-        return baseMapper.selectList(Wrappers.lambdaQuery(Office.class)
-                .eq(Office::getHosId, hosId)
-                .select(Office::getId).select(Office::getOfficesName));
+        return baseMapper.selectList(Wrappers.lambdaQuery(Office.class).eq(Office::getHosId, hosId).select(Office::getId, Office::getOfficesName));
     }
 
     @Override

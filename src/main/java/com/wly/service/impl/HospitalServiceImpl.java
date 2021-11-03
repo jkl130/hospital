@@ -6,7 +6,6 @@ import com.wly.entity.Doctor;
 import com.wly.entity.Hospital;
 import com.wly.entity.Office;
 import com.wly.entity.OrderRecords;
-import com.wly.exception.Assert;
 import com.wly.exception.BizException;
 import com.wly.mapper.DoctorMapper;
 import com.wly.mapper.HospitalMapper;
@@ -43,7 +42,10 @@ public class HospitalServiceImpl extends ServiceImpl<HospitalMapper, Hospital> i
     @Override
     public List<Hospital> findByName(String hospitalName) {
         // 根据医院名称 前缀模糊查询
-        return baseMapper.selectList(Wrappers.lambdaQuery(Hospital.class).likeRight(Hospital::getHospitalName, hospitalName).select(Hospital::getId, Hospital::getHospitalName));
+        return baseMapper.selectList(Wrappers.lambdaQuery(Hospital.class)
+                .likeRight(Hospital::getHospitalName, hospitalName)
+                .select(Hospital::getId, Hospital::getHospitalName)
+                .last("limit 5"));
     }
 
     @Override

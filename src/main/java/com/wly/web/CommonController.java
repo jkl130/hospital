@@ -51,7 +51,7 @@ public class CommonController {
      * 图片上传
      *
      * @param file 图片
-     * @return {@link String} base64编码的字符串
+     * @return {@link String} cos上图片的访问地址
      */
     @PostMapping("upload")
     public String fileUpload(@RequestParam(value = "upload") MultipartFile file) throws IOException {
