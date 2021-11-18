@@ -21,6 +21,8 @@ server:
     context-path: /api
 #mybatis:
 mybatis-plus:
+  configuration:
+    default-enum-type-handler: com.baomidou.mybatisplus.core.handlers.MybatisEnumTypeHandler
   mapperLocations: classpath:mapper/**/*.xml
 
 # 腾讯云密钥
