@@ -2,6 +2,8 @@ package com.wly.dto;
 
 import lombok.Data;
 
+import java.util.List;
+
 /**
  * 医生查询条件
  *
@@ -22,9 +24,9 @@ public class DoctorPageQuery extends PageQuery {
     private Integer officeId;
 
     /**
-     * 医生的名字
+     * 医生id
      */
-    private String doctorName;
+    private List<Integer> doctorIds;
 
     /**
      * 医生职称

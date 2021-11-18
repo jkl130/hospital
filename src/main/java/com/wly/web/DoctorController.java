@@ -53,8 +53,8 @@ public class DoctorController {
                         .eq(pageQuery.getDoctorAdministrative() != null, Doctor::getDoctorAdministrative, pageQuery.getDoctorAdministrative())
                         // 学位
                         .eq(pageQuery.getDoctorDegree() != null, Doctor::getDoctorDegree, pageQuery.getDoctorDegree())
-                        // 医生姓名 前缀模糊查询
-                        .likeRight(pageQuery.getDoctorName() != null, Doctor::getDoctorName, pageQuery.getDoctorName())
+                        // 医生
+                        .in(pageQuery.getDoctorIds() != null, Doctor::getId, pageQuery.getDoctorIds())
                         .eq(pageQuery.getHosId() != null, Doctor::getHosId, pageQuery.getHosId())
                         .eq(pageQuery.getOfficeId() != null, Doctor::getOfficeId, pageQuery.getOfficeId())
                         // 根据id倒序排序
