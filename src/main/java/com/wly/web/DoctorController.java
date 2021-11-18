@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.wly.dto.DoctorPageQuery;
 import com.wly.entity.Doctor;
+import com.wly.exception.BizException;
 import com.wly.service.DoctorService;
 import com.wly.service.HospitalService;
 import com.wly.service.OfficeService;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.util.List;
+import java.util.Optional;
 
 
 /**
@@ -38,6 +40,21 @@ public class DoctorController {
         return doctorService.findByHosIdAndOfficeId(hosId, officeId);
     }
 
+    @GetMapping("find/{id}")
+    public Doctor findById(@PathVariable Integer id) {
+        return Optional.ofNullable(doctorService.getById(id))
+                .map(this::peek)
+                .orElseThrow(() -> new BizException("医生[" + id + "]不存在"));
+    }
+
+    private Doctor peek(Doctor doctor) {
+        // 医院名称
+        doctor.setHospitalName(hospitalService.findNameById(doctor.getHosId()));
+        // 科室名称
+        doctor.setOfficesName(officeService.findNameById(doctor.getOfficeId()));
+        return doctor;
+    }
+
     /**
      * 医生条件查询
      *
@@ -59,13 +76,7 @@ public class DoctorController {
                         .eq(pageQuery.getOfficeId() != null, Doctor::getOfficeId, pageQuery.getOfficeId())
                         // 根据id倒序排序
                         .orderByDesc(Doctor::getId))
-                .convert(doctor -> {
-                    // 医院名称
-                    doctor.setHospitalName(hospitalService.findNameById(doctor.getHosId()));
-                    // 科室名称
-                    doctor.setOfficesName(officeService.findNameById(doctor.getOfficeId()));
-                    return doctor;
-                });
+                .convert(this::peek);
     }
 
     /**

@@ -1,6 +1,6 @@
 package com.wly.utils;
 
-import com.wly.entity.CommonUser;
+import com.wly.entity.User;
 import com.wly.exception.BizException;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -18,8 +18,8 @@ import java.util.Optional;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class UserContext {
 
-    public static CommonUser getCommonUser() {
+    public static User getUser() {
         // 从request中获取用户信息
-        return (CommonUser) Optional.ofNullable(((ServletRequestAttributes) (RequestContextHolder.currentRequestAttributes())).getRequest().getAttribute("userInfo")).orElseThrow(() -> new BizException("用户未登录"));
+        return (User) Optional.ofNullable(((ServletRequestAttributes) (RequestContextHolder.currentRequestAttributes())).getRequest().getAttribute("userInfo")).orElseThrow(() -> new BizException("用户未登录"));
     }
 }

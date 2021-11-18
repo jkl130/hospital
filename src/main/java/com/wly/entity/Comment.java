@@ -1,6 +1,7 @@
 package com.wly.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
@@ -59,4 +60,16 @@ public class Comment {
      * 提问时间
      */
     private LocalDateTime ctime;
+
+    /**
+     * 医生姓名
+     */
+    @TableField(exist = false)
+    private String doctorName;
+
+    /**
+     * 患者姓名
+     */
+    @TableField(exist = false)
+    private String username;
 }

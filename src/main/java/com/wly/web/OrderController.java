@@ -1,14 +1,12 @@
 package com.wly.web;
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import com.wly.entity.CommonUser;
 import com.wly.entity.OrderRecords;
 import com.wly.service.*;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 
@@ -43,10 +41,14 @@ public class OrderController {
      * @return {@link List}<{@link OrderRecords}>
      */
     @GetMapping("list")
-    private List<OrderRecords> list() {
-        return orderRecordsService.list().stream().peek(orderRecords -> {
+    private List<OrderRecords> list(Integer hosId, Integer officeId, Integer doctorId) {
+        return orderRecordsService.list(Wrappers.lambdaQuery(OrderRecords.class)
+                .eq(hosId != null, OrderRecords::getHosId, hosId)
+                .eq(officeId != null, OrderRecords::getOfficeId, officeId)
+                .eq(doctorId != null, OrderRecords::getDoctorId, doctorId)
+        ).stream().peek(orderRecords -> {
             // 患者名称
-            orderRecords.setUsername(Optional.ofNullable(commonUserService.getOne(Wrappers.lambdaQuery(CommonUser.class).eq(CommonUser::getUserId, orderRecords.getUserID()).select(CommonUser::getUserName))).map(CommonUser::getUserName).orElse(null));
+            orderRecords.setUsername(commonUserService.getUserNameById(orderRecords.getUserID()));
             // 医院名称
             orderRecords.setHospitalName(hospitalService.findNameById(orderRecords.getHosId()));
             // 科室名称

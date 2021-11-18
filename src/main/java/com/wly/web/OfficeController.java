@@ -8,6 +8,7 @@ import com.wly.dto.OfficePageQuery;
 import com.wly.entity.Doctor;
 import com.wly.entity.Hospital;
 import com.wly.entity.Office;
+import com.wly.exception.BizException;
 import com.wly.service.DoctorService;
 import com.wly.service.HospitalService;
 import com.wly.service.OfficeService;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.annotation.Resource;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -42,6 +44,21 @@ public class OfficeController {
         return officeService.findByHosId(hosId);
     }
 
+    @GetMapping("find/{id}")
+    public Office findById(@PathVariable Integer id) {
+        return Optional.ofNullable(officeService.getById(id))
+                .map(this::peek)
+                .orElseThrow(() -> new BizException("科室[" + id + "]不存在"));
+    }
+
+    private Office peek(Office office) {
+        // 医院名称
+        office.setHospitalName(hospitalService.findNameById(office.getHosId()));
+        // 医生人数
+        office.setDoctorNum(doctorService.count(Wrappers.lambdaQuery(Doctor.class).eq(Doctor::getHosId, office.getHosId()).eq(Doctor::getOfficeId, office.getId())) + "人");
+        return office;
+    }
+
     /**
      * 科室条件查询
      *
@@ -66,14 +83,7 @@ public class OfficeController {
             wrapper.in(Office::getHosId, hosIds);
         }
 
-        return officeService.page(new Page<>(pageQuery.getPageIndex(), pageQuery.getPageSize()), wrapper)
-                .convert(office -> {
-                    // 医院名称
-                    office.setHospitalName(hospitalService.findNameById(office.getHosId()));
-                    // 医生人数
-                    office.setDoctorNum(doctorService.count(Wrappers.lambdaQuery(Doctor.class).eq(Doctor::getHosId, office.getHosId()).eq(Doctor::getOfficeId, office.getId())) + "人");
-                    return office;
-                });
+        return officeService.page(new Page<>(pageQuery.getPageIndex(), pageQuery.getPageSize()), wrapper).convert(this::peek);
     }
 
     /**

@@ -7,6 +7,7 @@ import com.wly.dto.HosPageQuery;
 import com.wly.entity.Hospital;
 import com.wly.entity.Office;
 import com.wly.entity.OrderRecords;
+import com.wly.exception.BizException;
 import com.wly.service.HospitalService;
 import com.wly.service.OfficeService;
 import com.wly.service.OrderRecordsService;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.annotation.Resource;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 
 /**
@@ -41,6 +43,13 @@ public class HospitalController {
         return hospitalService.findByName(hospitalName);
     }
 
+    @GetMapping("find/{id}")
+    public Hospital findById(@PathVariable Integer id) {
+        return Optional.ofNullable(hospitalService.getById(id))
+                .map(this::peek)
+                .orElseThrow(() -> new BizException("医院[" + id + "]不存在"));
+    }
+
     /**
      * 医院条件查询
      *
@@ -49,8 +58,6 @@ public class HospitalController {
      */
     @PostMapping("/orderHos")
     public IPage<Hospital> orderHos(@RequestBody HosPageQuery pageQuery) {
-        // 今年第一天
-        LocalDateTime startOfYear = LocalDateTime.of(LocalDateTime.now().getYear(), 1, 1, 0, 0);
         return hospitalService.page(new Page<>(pageQuery.getPageIndex(), pageQuery.getPageSize()), Wrappers.lambdaQuery(Hospital.class)
                         // 医院类型
                         .eq(pageQuery.getHospitalNature() != null, Hospital::getHospitalNature, pageQuery.getHospitalNature())
@@ -66,19 +73,23 @@ public class HospitalController {
                         .eq(pageQuery.getDistrict() != null, Hospital::getHospitalArea, pageQuery.getDistrict())
                         // 根据id倒序排序
                         .orderByDesc(Hospital::getId))
-                .convert(hospital -> {
-                    // 科室数量
-                    hospital.setHospitalOfficesNum(Math.toIntExact(officeService.count(Wrappers.lambdaQuery(Office.class).eq(Office::getHosId, hospital.getId()))));
-                    // 年门诊量 = 医院的订单数量
-                    hospital.setOutpatientNum(Math.toIntExact(orderRecordsService.count(Wrappers.lambdaQuery(OrderRecords.class)
-                            .eq(OrderRecords::getHosId, hospital.getId())
-                            // 已经完成
-                            .eq(OrderRecords::getIsFinish, 1)
-                            // 创建时间在今年第一天之后
-                            .gt(OrderRecords::getCreateTime, startOfYear)
-                    )));
-                    return hospital;
-                });
+                .convert(this::peek);
+    }
+
+    /**
+     * 设置医院的扩展信息
+     */
+    public Hospital peek(Hospital hospital) {
+        // 科室数量
+        hospital.setHospitalOfficesNum(Math.toIntExact(officeService.count(Wrappers.lambdaQuery(Office.class).eq(Office::getHosId, hospital.getId()))));
+        // 年门诊量 = 医院的订单数量
+        hospital.setOutpatientNum(Math.toIntExact(orderRecordsService.count(Wrappers.lambdaQuery(OrderRecords.class)
+                .eq(OrderRecords::getHosId, hospital.getId())
+                // 已经完成
+                .eq(OrderRecords::getIsFinish, 1)
+                // 创建时间在今年第一天之后
+                .gt(OrderRecords::getCreateTime, LocalDateTime.of(LocalDateTime.now().getYear(), 1, 1, 0, 0)))));
+        return hospital;
     }
 
     /**
