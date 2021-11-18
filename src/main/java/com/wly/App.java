@@ -58,7 +58,7 @@ public class App implements WebMvcConfigurer {
                 // 要拦截的path
                 .addPathPatterns("/**")
                 // 要排除拦截的path
-                .excludePathPatterns("/user/login");
+                .excludePathPatterns("/user/login", "/user/gpw");
     }
 
     @Bean
