@@ -26,6 +26,7 @@ public enum Role {
      */
     DIRECTOR("1",
             Arrays.asList(
+                    "/user/info",
                     "/doctor",
                     "/office",
                     "/hos/find",
@@ -39,6 +40,7 @@ public enum Role {
      * 主任
      */
     CHIEF("2", Arrays.asList(
+            "/user/info",
             "/doctor",
             "/office/find",
             "/office/update",
@@ -52,6 +54,7 @@ public enum Role {
      * 医生
      */
     DOCTOR("3", Arrays.asList(
+            "/user/info",
             "/doctor/find",
             "/office/find",
             "/hos/find",

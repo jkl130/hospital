@@ -55,10 +55,10 @@ public class CommonUserController {
     }
 
     @GetMapping("info")
-    public Map<String, Integer> info() {
-        Map<String, Integer> idMap = new HashMap<>(4);
+    public Map<String, Object> info() {
+        Map<String, Object> idMap = new HashMap<>(4);
         User user = UserContext.getUser();
-
+        idMap.put("role", user.getRole());
         if (user.getRole() == Role.DIRECTOR) {
             idMap.put("hosId", user.getOutId());
         }

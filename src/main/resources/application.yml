@@ -10,7 +10,7 @@ spring:
   main.allow-bean-definition-overriding: true
 
 server:
-  port: 8080
+  port: 8082
   tomcat:
     uri-encoding: UTF-8
     max-connections: 20000
@@ -18,7 +18,7 @@ server:
       max: 128
       min-spare: 5
   servlet:
-    context-path: /api
+    context-path: /api2
 #mybatis:
 mybatis-plus:
   configuration:
