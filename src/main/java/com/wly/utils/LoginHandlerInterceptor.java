@@ -24,9 +24,9 @@ public class LoginHandlerInterceptor implements HandlerInterceptor {
             Map<String, Object> parseToken = JwtTokenUtils.parseToken(request.getHeader(JwtTokenUtils.AUTHORIZE_TOKEN));
             User userInfo = BeanUtil.mapToBean((Map<?, ?>) parseToken.get("userInfo"), User.class, false, null);
 
-            if (!userInfo.getRole().isAllow(request.getRequestURI().replace(request.getContextPath(), ""))) {
-                throw new RuntimeException();
-            }
+//            if (!userInfo.getRole().isAllow(request.getRequestURI().replace(request.getContextPath(), ""))) {
+//                throw new RuntimeException();
+//            }
             // 将用户信息放入request中
             request.setAttribute("userInfo", userInfo);
             return true;
