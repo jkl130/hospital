@@ -6,11 +6,13 @@ import com.wly.entity.Doctor;
 import com.wly.service.CommentService;
 import com.wly.service.CommonUserService;
 import com.wly.service.DoctorService;
+import com.wly.service.UserService;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -32,14 +34,22 @@ public class CommentController {
     @Resource
     private CommonUserService commonUserService;
 
+    @Resource
+    private UserService userService;
+
     /**
      * 列出所有评论
      *
      * @return {@link List}<{@link Comment}>
      */
     @GetMapping("list")
-    public List<Comment> list(Integer hosId, Integer officeId, Integer doctorId) {
+    public List<Comment> list() {
         List<Integer> list = new ArrayList<>();
+        Map<String, Object> info = userService.info2();
+        Integer doctorId = (Integer) info.get("doctor_id");
+        Integer hosId = (Integer) info.get("hos_id");
+        Integer officeId = (Integer) info.get("office_id");
+
         if (doctorId == null) {
             list.addAll(doctorService.list(Wrappers.lambdaQuery(Doctor.class)
                     .eq(hosId != null, Doctor::getHosId, hosId)

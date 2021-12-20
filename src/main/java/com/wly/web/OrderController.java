@@ -1,6 +1,5 @@
 package com.wly.web;
 
-import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.wly.entity.OrderRecords;
 import com.wly.service.*;
 import org.springframework.web.bind.annotation.*;
@@ -35,18 +34,18 @@ public class OrderController {
     @Resource
     private CommonUserService commonUserService;
 
+    @Resource
+    private UserService userService;
+
+
     /**
      * 列出订单
      *
      * @return {@link List}<{@link OrderRecords}>
      */
     @GetMapping("list")
-    private List<OrderRecords> list(Integer hosId, Integer officeId, Integer doctorId) {
-        return orderRecordsService.list(Wrappers.lambdaQuery(OrderRecords.class)
-                .eq(hosId != null, OrderRecords::getHosId, hosId)
-                .eq(officeId != null, OrderRecords::getOfficeId, officeId)
-                .eq(doctorId != null, OrderRecords::getDoctorId, doctorId)
-        ).stream().peek(orderRecords -> {
+    private List<OrderRecords> list() {
+        return orderRecordsService.listByMap(userService.info2()).stream().peek(orderRecords -> {
             // 患者名称
             orderRecords.setUsername(commonUserService.getUserNameById(orderRecords.getUserID()));
             // 医院名称
